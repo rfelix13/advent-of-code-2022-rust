@@ -1,10 +1,11 @@
 use std::collections::{VecDeque, HashSet};
 
 pub fn main() {
-    let mut queue_array: Vec<VecDeque<char>> = vec![VecDeque::new(); 9];
-    let mut queue_array_v2: Vec<VecDeque<char>> = vec![VecDeque::new(); 9];
     let input = include_str!("input.txt");
     let (config, instructions) = split_input(input);
+    
+    // part one
+    let mut queue_array: Vec<VecDeque<char>> = vec![VecDeque::new(); 9];
     config.split("\n").for_each(|line| {
         parse_config_line(line, &mut queue_array);
     });
@@ -15,7 +16,9 @@ pub fn main() {
         parse_instruction_line(line, &mut queue_array);
     });
     println!("{}", queue_array.iter().map(get_front).collect::<String>());
-
+    
+    // part two
+    let mut queue_array_v2: Vec<VecDeque<char>> = vec![VecDeque::new(); 9];
     config.split("\n").for_each(|line| {
         parse_config_line(line, &mut queue_array_v2);
     });
