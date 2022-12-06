@@ -1,10 +1,19 @@
 use std::collections::{VecDeque, HashSet};
 
 pub fn main() {
+    let input = include_str!("input.txt");
+    let (char_count, packet_marker) = find_first_unique_n_char_slice(input, 4);
     println!(
-        "{}\n{}",
-        find_first_unique_n_char_slice(include_str!("input.txt"), 4).0,
-        find_first_unique_n_char_slice(include_str!("input.txt"), 14).0
+        "Start of packet marker: `{}` after {} characters",
+        packet_marker,
+        char_count
+    );
+
+    let (char_count_two, message_marker) = find_first_unique_n_char_slice(input, 14);
+    println!(
+        "Message marker: `{}` after {} characters",
+        message_marker,
+        char_count_two
     );
 }
 
@@ -23,7 +32,6 @@ fn find_first_unique_n_char_slice(input: &str, n: u16) -> (String, String) {
         queue.pop_front();
         counter += 1;
     }
-    print!("{:?} ", queue);
     (counter.to_string(), queue.iter().collect::<String>())
 }
 
