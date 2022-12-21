@@ -1,6 +1,7 @@
-mod day_6;
+mod day_21;
 
 
 fn main() {
-    day_6::main();
+    let file_name = "src/day_21/input.txt".to_string();
+    day_21::main(&file_name);
 }
