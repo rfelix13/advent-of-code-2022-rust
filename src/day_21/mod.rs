@@ -123,27 +123,26 @@ impl Monkey {
         }
         if self.dependency.is_none() {
             panic!("No number or dependency");
-        } else {
-            let dependency = &self.dependency.as_ref().unwrap();
-            let (monkey_1, monkey_2) = dependency.get_monkeys(monkey_collection);
-            let monkey_1_number = monkey_1.get_number(monkey_collection);
-            let monkey_2_number = monkey_2.get_number(monkey_collection);
-            let monkey_calculated_number = match dependency.operation {
-                OperationEnum::Multiply => monkey_1_number * monkey_2_number,
-                OperationEnum::Add => monkey_1_number + monkey_2_number,
-                OperationEnum::Subtract => monkey_1_number - monkey_2_number,
-                OperationEnum::Divide => monkey_1_number / monkey_2_number,
-            };
-            monkey_collection.insert(
-                self.name.to_string(),
-                Monkey {
-                    name: self.name.clone(),
-                    number: Some(monkey_calculated_number),
-                    dependency: None
-                }
-            );
-            return monkey_calculated_number;
         }
+        let dependency = &self.dependency.as_ref().unwrap();
+        let (monkey_1, monkey_2) = dependency.get_monkeys(monkey_collection);
+        let monkey_1_number = monkey_1.get_number(monkey_collection);
+        let monkey_2_number = monkey_2.get_number(monkey_collection);
+        let monkey_calculated_number = match dependency.operation {
+            OperationEnum::Multiply => monkey_1_number * monkey_2_number,
+            OperationEnum::Add => monkey_1_number + monkey_2_number,
+            OperationEnum::Subtract => monkey_1_number - monkey_2_number,
+            OperationEnum::Divide => monkey_1_number / monkey_2_number,
+        };
+        monkey_collection.insert(
+            self.name.to_string(),
+            Monkey {
+                name: self.name.clone(),
+                number: Some(monkey_calculated_number),
+                dependency: None
+            }
+        );
+        return monkey_calculated_number;
     }
     fn has_human_dependency(&self, monkey_collection: &HashMap<String, Monkey>) -> bool {
         if self.name == "humn" {
@@ -170,7 +169,6 @@ impl Monkey {
                     dependency: None
                 }
             );
-            return;
         }
 
         // recursive case
