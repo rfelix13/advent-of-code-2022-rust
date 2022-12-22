@@ -2,60 +2,6 @@ use core::panic;
 use std::collections::HashMap;
 use std::fs;
 
-pub fn main(file_name: &String) {
-    let mut monkey_collection:HashMap<String, Monkey> = HashMap::new();
-    parse_lines(file_name, &mut monkey_collection);
-    let root_monkey = monkey_collection["root"].clone();
-    println!(
-        "root: {}",
-        root_monkey.get_number(&mut monkey_collection)
-    );
-
-    let mut monkey_collection_v2:HashMap<String, Monkey> = HashMap::new();
-    parse_lines(file_name, &mut monkey_collection_v2);
-    let root_monkey_v2 = monkey_collection_v2["root"].clone();
-    let (h_dep, o_dep) = {
-        let dep = root_monkey_v2.dependency.as_ref().unwrap().clone();
-        let (m1, m2) = dep.get_monkeys(&mut monkey_collection_v2);
-        if m1.has_human_dependency(&monkey_collection_v2) {
-            (m1, m2)
-        } else {
-            (m2, m1)
-        }
-    };
-    let new_number = o_dep.get_number(&mut monkey_collection_v2);
-    h_dep.solve_for_value(new_number, &mut monkey_collection_v2);
-    let human = monkey_collection_v2["humn"].clone();
-    println!(
-        "human: {}",
-        human.get_number(&mut monkey_collection_v2),
-    )
-}
-
-fn parse_lines(file_name: &String, monkey_collection: &mut HashMap<String, Monkey>) {
-    let file_string = fs::read_to_string(file_name).unwrap();
-    let lines = file_string.split("\n").collect::<Vec<&str>>();
-    for line in lines {
-        let monkey = Monkey::parse_line(line);
-        monkey_collection.insert(monkey.name.to_string(), monkey);
-    };
-}
-
-#[derive(Clone)]
-struct Dependency {
-    monkey_1_name: String,
-    monkey_2_name: String,
-    operation: OperationEnum
-}
-
-impl Dependency {
-    fn get_monkeys(&self, monkey_collection: &HashMap<String, Monkey>) -> (Monkey, Monkey) {
-        let monkey_1 = monkey_collection[self.monkey_1_name.as_str()].clone();
-        let monkey_2 = monkey_collection[self.monkey_2_name.as_str()].clone();
-        return (monkey_1, monkey_2);
-    }
-}
-
 
 #[derive(Clone, PartialEq, Eq)]
 enum OperationEnum {
@@ -64,7 +10,6 @@ enum OperationEnum {
     Subtract,
     Divide,
 }
-
 impl OperationEnum {
     fn from_str(operation: &str) -> OperationEnum {
         match operation {
@@ -93,13 +38,28 @@ impl OperationEnum {
     }
 }
 
+
+#[derive(Clone)]
+struct Dependency {
+    monkey_1_name: String,
+    monkey_2_name: String,
+    operation: OperationEnum
+}
+impl Dependency {
+    fn get_monkeys(&self, monkey_collection: &HashMap<String, Monkey>) -> (Monkey, Monkey) {
+        let monkey_1 = monkey_collection[self.monkey_1_name.as_str()].clone();
+        let monkey_2 = monkey_collection[self.monkey_2_name.as_str()].clone();
+        return (monkey_1, monkey_2);
+    }
+}
+
+
 #[derive(Clone)]
 struct Monkey {
     name: String,
     number: Option<i128>,
     dependency: Option<Dependency>,
 }
-
 impl Monkey {
     fn parse_line(line: &str) -> Monkey {
         let line_split = line.split(": ").collect::<Vec<&str>>();
@@ -169,6 +129,7 @@ impl Monkey {
                     dependency: None
                 }
             );
+            return;
         }
 
         // recursive case
@@ -200,4 +161,44 @@ impl Monkey {
         };
         h_monkey.solve_for_value(h_monkey_num, monkey_collection);
     }
+}
+
+fn parse_lines(file_name: &String, monkey_collection: &mut HashMap<String, Monkey>) {
+    let file_string = fs::read_to_string(file_name).unwrap();
+    let lines = file_string.split("\n").collect::<Vec<&str>>();
+    for line in lines {
+        let monkey = Monkey::parse_line(line);
+        monkey_collection.insert(monkey.name.to_string(), monkey);
+    };
+}
+
+
+pub fn main(file_name: &String) {
+    let mut monkey_collection:HashMap<String, Monkey> = HashMap::new();
+    parse_lines(file_name, &mut monkey_collection);
+    let root_monkey = monkey_collection["root"].clone();
+    println!(
+        "root: {}",
+        root_monkey.get_number(&mut monkey_collection)
+    );
+
+    let mut monkey_collection_v2:HashMap<String, Monkey> = HashMap::new();
+    parse_lines(file_name, &mut monkey_collection_v2);
+    let root_monkey_v2 = monkey_collection_v2["root"].clone();
+    let (h_dep, o_dep) = {
+        let dep = root_monkey_v2.dependency.as_ref().unwrap().clone();
+        let (m1, m2) = dep.get_monkeys(&mut monkey_collection_v2);
+        if m1.has_human_dependency(&monkey_collection_v2) {
+            (m1, m2)
+        } else {
+            (m2, m1)
+        }
+    };
+    let new_number = o_dep.get_number(&mut monkey_collection_v2);
+    h_dep.solve_for_value(new_number, &mut monkey_collection_v2);
+    let human = monkey_collection_v2["humn"].clone();
+    println!(
+        "human: {}",
+        human.get_number(&mut monkey_collection_v2),
+    )
 }
